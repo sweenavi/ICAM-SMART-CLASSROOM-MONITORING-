@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ICAM · Offline setup guide</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="guide-shell">
+  <header class="guide-header"><a class="brand" href="/"><span class="brand-icon">IC</span><span>ICAM<span class="brand-sub">SMART CLASSROOM</span></span></a><a class="button" href="/">← Back to dashboard</a></header>
+  <section class="guide-hero"><div class="eyebrow">OFFLINE ESP32-S3 DASHBOARD</div><h1>Connect without internet.</h1><p>The ESP32 creates its own Wi-Fi network and serves the dashboard from LittleFS. No college Wi-Fi, router, mobile data, cloud, or Raspberry Pi is required.</p></section>
+  <div class="guide-warning"><strong>Offline mode:</strong> the dashboard only works while the phone/laptop is connected to the ESP32 network. If your phone reports “No internet”, select “Stay connected” or disable automatic switching to mobile data.</div>
+  <section class="guide-card"><h2>01 / Connect and open</h2><ol><li>Power the ESP32-S3 and open Serial Monitor at <strong>115200 baud</strong>.</li><li>On your phone/laptop, open Wi-Fi and connect to <code>ICAM-Classroom</code>.</li><li>Enter password <code>ICAM@2026</code>.</li><li>Keep connected even if the device reports no internet.</li><li>Open a browser and visit <code>http://192.168.4.1</code>.</li><li>Live readings are fetched from <code>/api/status</code> once per second. Open <code>http://192.168.4.1/api/status</code> to inspect raw JSON.</li></ol></section>
+  <section class="guide-card"><h2>02 / Folder structure</h2><pre><code>ICAM2/
+├── ICAM2.ino
+├── icam_web.h
+└── data/
+    ├── index.html
+    ├── styles.css
+    ├── app.js
+    ├── guide.html
+    └── README.md</code></pre><p>Keep <code>icam_web.h</code> beside <code>ICAM2.ino</code>. Keep the website files in <code>data/</code> so they are uploaded to LittleFS.</p></section>
+  <section class="guide-card"><h2>03 / Upload steps</h2><ol><li>Back up your working sketch first.</li><li>Open <code>ICAM2.ino</code> in Arduino IDE and select your working ESP32-S3 board, port and partition scheme.</li><li>Install the DHT and Adafruit display libraries already required by your sketch, plus a LittleFS uploader compatible with your ESP32 core.</li><li>Upload the sketch normally.</li><li>Upload the <code>data/</code> folder to LittleFS using the same partition layout. A filesystem upload replaces the existing filesystem, so back up files first.</li><li>Reset the board, connect to the AP, and open <code>http://192.168.4.1</code>.</li></ol></section>
+  <section class="guide-card"><h2>04 / Live fields</h2><ul><li>DHT22: temperature and humidity.</li><li>Dual IR sensors: counted students and occupied status.</li><li>LDR: digital ambient-light detection, not calibrated lux.</li><li>MQ-2: raw ADC and threshold status, not ppm.</li><li>ACS712: estimated current in A and mA based on firmware calibration.</li><li>Fan relay, LED relay and buzzer output states.</li></ul><p>The dashboard is read-only. Existing ESP32 firmware controls outputs. Current accuracy depends on sensor calibration and wiring; displayed readings are not certified safety measurements.</p></section>
+  <section class="guide-card"><h2>05 / Troubleshooting</h2><ul><li><strong>Wi-Fi network not visible:</strong> reset the ESP32 and check Serial Monitor for “ICAM OFFLINE DASHBOARD READY”.</li><li><strong>192.168.4.1 does not open:</strong> verify the device is still connected to ICAM-Classroom, and type <code>http://</code> explicitly.</li><li><strong>Page opens but no live values:</strong> open <code>http://192.168.4.1/api/status</code>. If it fails, check the LittleFS upload and partition layout.</li><li><strong>Dashboard files missing:</strong> verify <code>index.html</code>, <code>styles.css</code>, and <code>app.js</code> are in the <code>data/</code> folder and uploaded to LittleFS.</li></ul></section>
+  <section class="guide-card"><h2>Network and safety notes</h2><p>This is a local, unencrypted HTTP dashboard with no login. Keep the network private and do not expose it to the public internet. MQ-2 is a demonstration sensor, not a certified gas/fire alarm. Never rely on the dashboard for safety-critical alerts.</p></section>
+  <footer class="page-footer"><span><strong>ICAM</strong> Intelligent Classroom Automation & Monitoring</span><a href="/">Back to dashboard →</a></footer>
+</main>
+</body>
+</html>
